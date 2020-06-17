@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using RockScisorsPaper.Model;
+using RockScisorsPaper.Services;
 
 namespace RockScisorsPaper
 {
@@ -31,6 +34,9 @@ namespace RockScisorsPaper
                 configuration.RootPath = "ClientApp/build";
             });
 
+            services.AddIdentity<User, IdentityRole>()
+                .AddEntityFrameworkStores<AccountDBContext>();
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                     options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login"));
@@ -50,7 +56,13 @@ namespace RockScisorsPaper
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            //app.CreatePerOwinContext(CustomUserManager.Create);
 
+            //app.CreatePerOwinContext<CustomUserManager>(CustomUserManager.Create);
+            //app.CreatePerOwinContext<AppRoleManager>(AppRoleManager.Create);
+
+            app.UseAuthentication();    // аутентификация
+            app.UseAuthorization();     // авторизация
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -60,6 +72,9 @@ namespace RockScisorsPaper
 
             app.UseEndpoints(endpoints =>
             {
+
+                //endpoints.MapHub<GameHub>("/Game");
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
