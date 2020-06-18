@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using RockScisorsPaper.Model;
 using RockScisorsPaper.Services;
 
@@ -34,12 +36,30 @@ namespace RockScisorsPaper
                 configuration.RootPath = "ClientApp/build";
             });
 
-            services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<AccountDBContext>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        // укзывает, будет ли валидироваться издатель при валидации токена
+                        ValidateIssuer = true,
+                        // строка, представляющая издателя
+                        ValidIssuer = AuthOptions.ISSUER,
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
-                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login"));
+                        // будет ли валидироваться потребитель токена
+                        ValidateAudience = true,
+                        // установка потребителя токена
+                        ValidAudience = AuthOptions.AUDIENCE,
+                        // будет ли валидироваться время существования
+                        ValidateLifetime = true,
+
+                        // установка ключа безопасности
+                        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                        // валидация ключа безопасности
+                        ValidateIssuerSigningKey = true,
+                    };
+                });
 
         }
         
@@ -56,29 +76,32 @@ namespace RockScisorsPaper
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            //app.CreatePerOwinContext(CustomUserManager.Create);
-
-            //app.CreatePerOwinContext<CustomUserManager>(CustomUserManager.Create);
-            //app.CreatePerOwinContext<AppRoleManager>(AppRoleManager.Create);
-
-            app.UseAuthentication();    // аутентификация
-            app.UseAuthorization();     // авторизация
-
+            
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
 
             app.UseRouting();
 
+
+            app.UseAuthentication();    // аутентификация
+            app.UseAuthorization();     // авторизация
+
             app.UseEndpoints(endpoints =>
             {
 
                 //endpoints.MapHub<GameHub>("/Game");
-
+                //endpoints.MapControllers(); 
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
+                /*endpoints.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new { controller = "Home", action = "Index" });*/
             });
+
+
 
             app.UseSpa(spa =>
             {

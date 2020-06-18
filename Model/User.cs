@@ -8,16 +8,16 @@ namespace RockScisorsPaper.Model
 {
     public class User //: IUser<string>
     {
-        public User(string name, string password)
+        public User(string login, string password)
         {
             //Id = Guid.NewGuid().ToString();
-            UserName = name;
+            Login = login;
             //TODO: implement real hashing
             PasswordHash = password.GetHashCode().ToString();
         }
         public string PasswordHash { get; set; }
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string UserName { get; set; }
+        public string Login { get; set; }
     }
 }
