@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace RockScisorsPaper
+namespace RockScissorsPaper
 {
     public class AuthOptions
     {

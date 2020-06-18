@@ -1,23 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
-using RockScisorsPaper.Model;
+using RockScissorsPaper.Services;
 
-namespace RockScisorsPaper.Controllers
+namespace RockScissorsPaper.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ILogger<AccountController> _logger;
+        private readonly ILogger<AccountController> logger;
+        private readonly IAuthService authService;
 
-        public AccountController(ILogger<AccountController> logger)
+        public AccountController(ILogger<AccountController> logger, IAuthService authService)
         {
-            _logger = logger;
+            this.logger = logger;
+            this.authService = authService;
         }
 
         [HttpGet]
@@ -28,18 +25,28 @@ namespace RockScisorsPaper.Controllers
         public string Check() => HttpContext.User.Identity.Name;
 
         [HttpPost]
-        public object Login([FromForm] string username, [FromForm]string password)
+        public async Task<object> Login([FromForm] string login, [FromForm]string password)
         {
-            _logger.Log(LogLevel.Debug, username);
-            // создаем JWT-токен
-            var encodedJwt = "";//TODO:
+            logger.Log(LogLevel.Debug, login);
+            var encodedJwt = await authService.LoginAsync(login, password);
             var response = new
             {
                 access_token = encodedJwt,
-                username = username
+                username = login
             };
             return response;
         }
-
+        
+        [HttpPost]
+        public async Task<object> Register([FromForm] string login, [FromForm] string password)
+        {
+            var encodedJwt = await authService.RegisterAsync(login, password);
+            var response = new
+            {
+                access_token = encodedJwt,
+                username = login
+            };
+            return response;
+        }
     }
 }

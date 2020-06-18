@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RockScisorsPaper.Model;
+using RockScissorsPaper.Model;
 
 
-namespace RockScisorsPaper.Services
+namespace RockScissorsPaper.Services
 {
     public class AccountDBContext : DbContext
     {
@@ -11,12 +11,11 @@ namespace RockScisorsPaper.Services
             Database.EnsureCreated();
         }
 
-        public const string ConnectionString = ""; //{ get; set; }
+        public const string ConnectionString =
+            "User ID=postgres;Password=android;Host=localhost;Port=5432;Database=db1;Pooling=true;SSL Mode=Prefer;Trust Server Certificate=True";
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer(ConnectionString);
             optionsBuilder.UseNpgsql(ConnectionString);
-            //UseNpgsql
             base.OnConfiguring(optionsBuilder);
         }
 

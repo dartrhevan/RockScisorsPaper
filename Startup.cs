@@ -1,20 +1,15 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using RockScisorsPaper.Model;
-using RockScisorsPaper.Services;
+using RockScissorsPaper.Services;
 
-namespace RockScisorsPaper
+namespace RockScissorsPaper
 {
     public class Startup
     {
@@ -35,6 +30,8 @@ namespace RockScisorsPaper
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            services.AddTransient<IAuthService, AuthenticationServiceImpl>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -60,6 +57,9 @@ namespace RockScisorsPaper
                         ValidateIssuerSigningKey = true,
                     };
                 });
+
+            services.AddDbContext<AccountDBContext>(options =>
+                options.UseNpgsql(AccountDBContext.ConnectionString));
 
         }
         
@@ -92,13 +92,10 @@ namespace RockScisorsPaper
             {
 
                 //endpoints.MapHub<GameHub>("/Game");
-                //endpoints.MapControllers(); 
+
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
-                /*endpoints.MapSpaFallbackRoute(
-                    name: "spa-fallback",
-                    defaults: new { controller = "Home", action = "Index" });*/
             });
 
 

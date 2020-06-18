@@ -1,19 +1,14 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.Cryptography;
-//using Microsoft.AspNet.Identity;
 
-namespace RockScisorsPaper.Model
+namespace RockScissorsPaper.Model
 {
-    public class User //: IUser<string>
+    public class User 
     {
         public User(string login, string password)
         {
-            //Id = Guid.NewGuid().ToString();
             Login = login;
-            //TODO: implement real hashing
-            PasswordHash = password.GetHashCode().ToString();
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
         }
         public string PasswordHash { get; set; }
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]

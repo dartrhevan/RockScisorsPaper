@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BCrypt.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using RockScisorsPaper.Model;
+using RockScissorsPaper.Model;
 
-namespace RockScisorsPaper.Services
+namespace RockScissorsPaper.Services
 {
     public class AuthenticationServiceImpl : IAuthService
     {
@@ -30,8 +31,8 @@ namespace RockScisorsPaper.Services
         {
             using (var db = new AccountDBContext())
             {
-                var user = await db.Users.FirstOrDefaultAsync(u =>
-                    u.Login == login && password.GetHashCode().ToString() == u.PasswordHash);
+                var user = await db.Users.FirstOrDefaultAsync(u => u.Login == login &&
+                      BCrypt.Net.BCrypt.Verify(password,u.PasswordHash, false, HashType.SHA384));
                 if (user == null)
                     return null;
                 return GetToken(login);

@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Home from './components/Home';
 
 import './custom.css'
+import Game from "./components/Game";
 
 export default class App extends React.Component {
 
@@ -11,7 +12,8 @@ export default class App extends React.Component {
         return (
             <Layout>
                 <Switch>
-                    <Route exact path='/' component={Home}/>
+                    <Route exact path='/' component={Home} />
+                    <Route exact path='/game' component={Game} />
                 </Switch>
             </Layout>
         );

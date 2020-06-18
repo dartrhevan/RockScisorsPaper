@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RockScisorsPaper.Model
+namespace RockScissorsPaper.Model
 {
     public class Game
     {

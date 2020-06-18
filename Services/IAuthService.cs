@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace RockScisorsPaper.Services
+namespace RockScissorsPaper.Services
 {
     public interface IAuthService
     {
