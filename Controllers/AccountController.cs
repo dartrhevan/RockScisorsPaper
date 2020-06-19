@@ -24,29 +24,40 @@ namespace RockScissorsPaper.Controllers
         [HttpGet]
         public string Check() => HttpContext.User.Identity.Name;
 
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<object> Login([FromForm] string login, [FromForm]string password)
+        public IActionResult Login([FromForm] string login, [FromForm]string password)
         {
             logger.Log(LogLevel.Debug, login);
-            var encodedJwt = await authService.LoginAsync(login, password);
+            var encodedJwt = authService.Login(login, password);
+            if (encodedJwt == null)
+                return BadRequest(new { message = "Such user did not find"});
             var response = new
             {
                 access_token = encodedJwt,
                 username = login
             };
-            return response;
+            return Ok(response);
         }
-        
+
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<object> Register([FromForm] string login, [FromForm] string password)
+        public async Task<IActionResult> Register([FromForm] string login, [FromForm] string password)
         {
+            logger.Log(LogLevel.Debug, login);
+            logger.Log(LogLevel.Debug, password);
             var encodedJwt = await authService.RegisterAsync(login, password);
+            if (encodedJwt == null)
+                return BadRequest(new
+                {
+                    message = "Such user already exists"
+                });
             var response = new
             {
                 access_token = encodedJwt,
                 username = login
             };
-            return response;
+            return Ok(response);
         }
     }
 }

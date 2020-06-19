@@ -60,7 +60,9 @@ namespace RockScissorsPaper
 
             services.AddDbContext<AccountDBContext>(options =>
                 options.UseNpgsql(AccountDBContext.ConnectionString));
-
+            
+            using (var db = new AccountDBContext())
+                db.Database.EnsureCreated();
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,8 +78,15 @@ namespace RockScissorsPaper
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            
-            
+            /*
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = serviceScope.ServiceProvider.GetRequiredService<AccountDBContext>();
+                context.Database.EnsureCreated();/*
+                var databaseCreator = context.GetService<IRelationalDatabaseCreator>();
+                databaseCreator.CreateTables();*
+            }*/
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

@@ -5,6 +5,8 @@ namespace RockScissorsPaper.Model
 {
     public class User 
     {
+        public User() { }
+
         public User(string login, string password)
         {
             Login = login;

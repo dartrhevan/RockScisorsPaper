@@ -2,22 +2,6 @@ import * as React from 'react';
 import { Button } from 'reactstrap';
 
 class Home extends React.Component {
-    sendLogin = () => {
-        const body = new FormData();
-        body.append('username', 'ddd');
-        body.append('password', 'ccc');
-        fetch('/Account/Login',
-                {
-                    method: 'POST',
-                    body: body
-                }).then(r => r.json())
-            .then(r => {
-                alert('Hello ' + r.username);
-                sessionStorage.setItem('token', r.access_token);
-            });
-    };
-
-
     check = () => {
         fetch('Account/Check',
             {
@@ -45,7 +29,6 @@ class Home extends React.Component {
                 </ul>
                 <p>The <code>ClientApp</code> subdirectory is a standard React application based on the <code>create-react-app</code> template. If you open a command prompt in that directory, you can run <code>npm</code> commands such as <code>npm test</code> or <code>npm install</code>.</p>
 
-                <Button onClick={this.sendLogin}>Login</Button>
                 <Button onClick={this.check}>Check</Button>
             </div>
         );

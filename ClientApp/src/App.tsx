@@ -5,6 +5,8 @@ import Home from './components/Home';
 
 import './custom.css'
 import Game from "./components/Game";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 export default class App extends React.Component {
 
@@ -14,6 +16,8 @@ export default class App extends React.Component {
                 <Switch>
                     <Route exact path='/' component={Home} />
                     <Route exact path='/game' component={Game} />
+                    <Route exact path='/login' component={Login} />
+                    <Route exact path='/register' component={Register} />
                 </Switch>
             </Layout>
         );

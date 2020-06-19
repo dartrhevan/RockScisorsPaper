@@ -8,15 +8,19 @@ namespace RockScissorsPaper.Services
     {
         public AccountDBContext()
         {
-            Database.EnsureCreated();
+            //Database.EnsureCreated();
         }
 
         public const string ConnectionString =
-            "User ID=postgres;Password=android;Host=localhost;Port=5432;Database=db1;Pooling=true;SSL Mode=Prefer;Trust Server Certificate=True";
+            "User ID=postgres;Password=android;Host=localhost;Port=5432;Database=game_db;Pooling=true;SSL Mode=Prefer;Trust Server Certificate=True";
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(ConnectionString);
             base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseNpgsql(ConnectionString);
+        }
+        public AccountDBContext(DbContextOptions<AccountDBContext> options) : base(options)
+        {
+            //Database.EnsureCreated();
         }
 
         public DbSet<User> Users { get; set; }

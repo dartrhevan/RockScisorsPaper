@@ -23,12 +23,20 @@ export default class NavMenu extends React.PureComponent<{}, { isOpen: boolean }
                                 <NavItem>
                                     <NavLink tag={Link} className="text-dark" to="/game">Game</NavLink>
                                 </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/login">Login</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/register">Register</NavLink>
-                                </NavItem>
+                                {sessionStorage.getItem('token') ?
+                                    (<NavItem>
+                                        <NavLink tag={Link} className="text-dark">{sessionStorage.getItem('username')}</NavLink>
+                                    </NavItem>) :
+                                    (<NavItem>
+                                            <NavLink tag={Link} className="text-dark" to="/login">Login</NavLink>
+                                    </NavItem>)}
+                                {sessionStorage.getItem('token') ?
+                                    (<NavItem>
+                                        <NavLink tag={Link} className="text-dark" onClick={this.logout}>Logout</NavLink>
+                                    </NavItem>) :
+                                    (<NavItem>
+                                        <NavLink tag={Link} className="text-dark" to="/register">Register</NavLink>
+                                    </NavItem>)}
                             </ul>
                         </Collapse>
                     </Container>
@@ -42,4 +50,9 @@ export default class NavMenu extends React.PureComponent<{}, { isOpen: boolean }
             isOpen: !this.state.isOpen
         });
     }
+    logout = () => {
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('username');
+        window.location.href = '/';
+    };
 }

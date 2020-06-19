@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 
-namespace RockScissorsPaper.Services
+namespace RockScissorsPaper.Controllers
 {
     public class GameHub : Hub
     {
