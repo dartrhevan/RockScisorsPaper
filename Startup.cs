@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using RockScissorsPaper.Controllers;
 using RockScissorsPaper.Services;
 
 namespace RockScissorsPaper
@@ -32,6 +33,10 @@ namespace RockScissorsPaper
             });
 
             services.AddTransient<IAuthService, AuthenticationServiceImpl>();
+
+            services.AddSingleton<IGameService, GameServiceImpl>();
+
+            services.AddSignalR();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -78,15 +83,6 @@ namespace RockScissorsPaper
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            /*
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var context = serviceScope.ServiceProvider.GetRequiredService<AccountDBContext>();
-                context.Database.EnsureCreated();/*
-                var databaseCreator = context.GetService<IRelationalDatabaseCreator>();
-                databaseCreator.CreateTables();*
-            }*/
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseSpaStaticFiles();
@@ -100,7 +96,7 @@ namespace RockScissorsPaper
             app.UseEndpoints(endpoints =>
             {
 
-                //endpoints.MapHub<GameHub>("/Game");
+                endpoints.MapHub<GameHub>("/GameHub");
 
                 endpoints.MapControllerRoute(
                     name: "default",

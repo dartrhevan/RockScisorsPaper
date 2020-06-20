@@ -12,3 +12,21 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
+
+
+.competitor-choose {
+    display: none;
+}
+
+.centerd {
+    text-align: center;
+}
+
+button {
+    margin: 10px;
+}
+
+input.form-control {
+    width: 250px;
+    display: inline;
+}

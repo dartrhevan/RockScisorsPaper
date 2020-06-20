@@ -7,7 +7,7 @@ import send from "../Send";
 export default class Register extends React.Component {
 
     sendReg = send.bind(this, '/Account/Register');
-    render(): Object | string | number | {} | Object | Object | boolean {
+    render(): Object | string | number | {} | boolean {
         return (<div>
                     <h2>Authentication</h2>
                     Login:

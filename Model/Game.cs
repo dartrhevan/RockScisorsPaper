@@ -7,6 +7,9 @@ namespace RockScissorsPaper.Model
 {
     public class Game
     {
-        
+        public Game(User user1, User user2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

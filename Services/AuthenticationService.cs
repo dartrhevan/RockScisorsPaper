@@ -54,5 +54,11 @@ namespace RockScissorsPaper.Services
                 return GetToken(login);
             }
         }
+
+        public async Task<User> GetUser(string login)
+        {
+            using (var db = new AccountDBContext())
+                return await db.Users.FindAsync(login).AsTask();
+        }
     }
 }

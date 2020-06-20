@@ -11,7 +11,7 @@ class Home extends React.Component {
             }).then(r => r.text()).then(alert);
     };
 
-    render(): Object | string | number | {} | Object | Object | boolean {
+    render(): Object | string | number | {} | boolean {
         return (
             <div>
                 <h1>Hello, world!</h1>
