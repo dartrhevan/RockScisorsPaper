@@ -1,6 +1,7 @@
 ﻿import React from "react";
 import { Button, Input } from "reactstrap";
 import $ from "jquery";
+import { send } from '../GameInteraction';
 
 export default class Game extends React.Component {
 
@@ -30,7 +31,7 @@ export default class Game extends React.Component {
                 </div>
                 <br />
                 <br />
-                <Button>With bot</Button>
+                <Button onClick={send}>With bot</Button>
                 <br />
             </div>);
     }

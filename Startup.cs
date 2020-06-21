@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -61,7 +62,23 @@ namespace RockScissorsPaper
                         // валидация ключа безопасности
                         ValidateIssuerSigningKey = true,
                     };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            // если запрос направлен хабу
+                            var path = context.HttpContext.Request.Path;
+                            if (context.Token == null && !string.IsNullOrEmpty(accessToken) && (path.StartsWithSegments("/GameHub")))
+                                // получаем токен из строки запроса
+                                context.Token = accessToken;
+                            return Task.CompletedTask;
+                        }
+                    };
                 });
+
 
             services.AddDbContext<AccountDBContext>(options =>
                 options.UseNpgsql(AccountDBContext.ConnectionString));

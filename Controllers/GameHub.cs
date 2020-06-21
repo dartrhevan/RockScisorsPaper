@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -7,6 +8,7 @@ using RockScissorsPaper.Services;
 
 namespace RockScissorsPaper.Controllers
 {
+    [Authorize]
     public class GameHub : Hub
     {
         private ILogger<GameHub> _logger;
@@ -25,6 +27,12 @@ namespace RockScissorsPaper.Controllers
             GameType value;
             GameType.TryParse(type, out value);
             _gameService.JoinGame(await _authService.GetUser(Context.User.Identity.Name), value);
+            
+        }
+
+        public async Task Greetings()
+        {
+            await Clients.Caller.SendAsync("Greetings", Context.User.Identity.Name);
         }
 
         public void LeaveGame()

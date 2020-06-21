@@ -9,7 +9,8 @@ export default class Login extends React.Component {
         return (<div>
                     <h2>Authentication</h2>
                     Login:
-                    <Input id='login'/>
+                    <Input id='login' />
+                    <br />
                     Password:
                     <Input id='password' type='password' />
                     <br/>
