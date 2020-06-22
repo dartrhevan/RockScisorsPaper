@@ -30,5 +30,10 @@ namespace RockScissorsPaper.Tests
             Assert.AreEqual(result, gameService.WaitingUsers.Count, "Users count");
             Assert.AreEqual(gameCount, gameService.Games.Count, "Games count");
         }
+
+        public void PlayRandomGame()
+        {
+
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace RockScissorsPaper.Services
 
         void LeaveGame(User user);
 
-        User Play(User user, GameValue value);
+        PlayResult Play(User user, GameValue value);
 
     }
 }

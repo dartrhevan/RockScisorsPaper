@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RockScissorsPaper.Model
 {
-    public class User 
+    public class User : IPlayer
     {
         public User() { }
 
@@ -36,5 +36,7 @@ namespace RockScissorsPaper.Model
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string Login { get; set; }
+        [NotMapped]
+        public GameValue Value { get; set; }
     }
 }

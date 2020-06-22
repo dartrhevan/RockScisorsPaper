@@ -63,15 +63,13 @@ namespace RockScissorsPaper.Services
         public void LeaveGame(User user)
         {
             WaitingUsers.Remove(user);
-            Games.RemoveWhere(g => g.Participate(user));
+            Games.RemoveWhere(g => g.Participates(user));
         }
 
-        public User Play(User user, GameValue value)
+        public PlayResult Play(User user, GameValue value)
         {
-            var game = Games.FirstOrDefault(g => g.Participate(user));
-            if (game == null) return null;
-
-            return user;
+            var game = Games.FirstOrDefault(g => g.Participates(user));
+            return game?.Play();
         }
     }
 }

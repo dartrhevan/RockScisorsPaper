@@ -10,45 +10,41 @@ namespace RockScissorsPaper.Model
         public readonly User User1;
         public readonly User User2;
 
-        public Tuple<User, GameValue> GetWinner()
+        public PlayResult Play()
         {
-            if(User1 == null || User2 == null || Value1 == GameValue.None || Value2 == GameValue.None)
-                throw new Exception("Not all players played");
-            if (Value2 == Value1)
-                return null;
-            return Value1 switch
+            if (User1 == null || User2 == null || User1.Value == GameValue.None || User2.Value == GameValue.None)
+                return new PlayResult(null, null, GameResult.NotCompleted);
+            if (User1.Value == User2.Value)
+                return new PlayResult(User1, User2, GameResult.Draw);
+            return User1.Value switch
             {
-                GameValue.Rock => Value2 switch
+                GameValue.Rock => User2.Value switch
                 {
-                    GameValue.Scissors => Tuple.Create(User1, Value1),
-                    GameValue.Paper => Tuple.Create(User2, Value2),
+                    GameValue.Scissors => new PlayResult(User2, User1),// Tuple.Create(User1, Value1),
+                    GameValue.Paper => new PlayResult(User1, User2),
                     _ => throw new ArgumentException("Value2 exp")
                 },
-                GameValue.Scissors => Value2 switch
+                GameValue.Scissors => User2.Value switch
                 {
-                    GameValue.Rock => Tuple.Create(User2, Value2),
-                    GameValue.Paper => Tuple.Create(User1, Value1),
+                    GameValue.Rock => new PlayResult(User1, User2),
+                    GameValue.Paper => new PlayResult(User2, User1),
                     _ => throw new ArgumentException("Value2 exp")
                 },
-                GameValue.Paper => Value2 switch
+                GameValue.Paper => User2.Value switch
                 {
-                    GameValue.Scissors => Tuple.Create(User2, Value2),
-                    GameValue.Rock => Tuple.Create(User1, Value1),
+                    GameValue.Scissors => new PlayResult(User1, User2),
+                    GameValue.Rock => new PlayResult(User2, User1),
                     _ => throw new ArgumentException("Value2 exp")
                 },
                 _ => throw new ArgumentException("Value1 exp")
             };
         }
-
-        public GameValue Value1 { get; set; } = GameValue.None;
-        public GameValue Value2 { get; set; } = GameValue.None;
-
         protected bool Equals(Game other)
         {
             return Equals(User1, other.User1) && Equals(User2, other.User2);
         }
 
-        public bool Participate(User user) => User1.Equals(user) || User2.Equals(user);
+        public bool Participates(User user) => User1.Equals(user) || User2.Equals(user);
 
         public override bool Equals(object obj)
         {
