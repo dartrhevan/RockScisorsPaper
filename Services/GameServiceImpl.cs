@@ -43,6 +43,8 @@ namespace RockScissorsPaper.Services
                 Games.Add(new Game(user, competitor));
                 WaitingUsers.Remove(competitor);
             }
+            /*else
+                WaitingUsers.Add(user);*/
         }
 
         private void JoinRandomGame(User user)
@@ -53,17 +55,23 @@ namespace RockScissorsPaper.Services
                 Games.Add(new Game(user, competitor));
                 WaitingUsers.Remove(competitor);
             }
+            else
+                WaitingUsers.Add(user);
         }
 
 
         public void LeaveGame(User user)
         {
-            throw new System.NotImplementedException();
+            WaitingUsers.Remove(user);
+            Games.RemoveWhere(g => g.Participate(user));
         }
 
-        public void Play(User user, GameValue value)
+        public User Play(User user, GameValue value)
         {
-            throw new System.NotImplementedException();
+            var game = Games.FirstOrDefault(g => g.Participate(user));
+            if (game == null) return null;
+
+            return user;
         }
     }
 }

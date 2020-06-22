@@ -18,7 +18,7 @@ export default class Game extends React.Component {
             <div className="centerd">
                 <h2>Play</h2>
                 <br />
-                <Button>With random competitor</Button>
+                <Button onClick={send}>With random competitor</Button>
                 <br />
                 <br />
                 <Button onClick={this.show}>Choose competitor</Button>
@@ -31,7 +31,7 @@ export default class Game extends React.Component {
                 </div>
                 <br />
                 <br />
-                <Button onClick={send}>With bot</Button>
+                <Button>With bot</Button>
                 <br />
             </div>);
     }

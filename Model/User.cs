@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RockScissorsPaper.Model
@@ -6,6 +7,25 @@ namespace RockScissorsPaper.Model
     public class User 
     {
         public User() { }
+
+        private sealed class IdEqualityComparer : IEqualityComparer<User>
+        {
+            public bool Equals(User x, User y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (ReferenceEquals(x, null)) return false;
+                if (ReferenceEquals(y, null)) return false;
+                if (x.GetType() != y.GetType()) return false;
+                return x.Id == y.Id;
+            }
+
+            public int GetHashCode(User obj)
+            {
+                return obj.Id;
+            }
+        }
+
+        public static IEqualityComparer<User> IdComparer { get; } = new IdEqualityComparer();
 
         public User(string login, string password)
         {

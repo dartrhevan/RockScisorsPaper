@@ -2,6 +2,7 @@
 {
     public enum GameValue : byte
     {
+        None,
         Rock,
         Scissors,
         Paper

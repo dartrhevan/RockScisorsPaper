@@ -26,14 +26,13 @@ namespace RockScissorsPaper.Controllers
         {
             GameType value;
             GameType.TryParse(type, out value);
-            _gameService.JoinGame(await _authService.GetUser(Context.User.Identity.Name), value);
-            
+            _gameService.JoinGame(await _authService.GetUser(Context.User.Identity.Name), value, competitor);
         }
-
+        /*
         public async Task Greetings()
         {
             await Clients.Caller.SendAsync("Greetings", Context.User.Identity.Name);
-        }
+        }*/
 
         public void LeaveGame()
         {

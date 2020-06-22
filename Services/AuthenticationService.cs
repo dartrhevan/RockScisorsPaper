@@ -58,7 +58,7 @@ namespace RockScissorsPaper.Services
         public async Task<User> GetUser(string login)
         {
             using (var db = new AccountDBContext())
-                return await db.Users.FindAsync(login).AsTask();
+                return await db.Users.FirstOrDefaultAsync(u => u.Login == login);
         }
     }
 }

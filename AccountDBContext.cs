@@ -2,7 +2,7 @@
 using RockScissorsPaper.Model;
 
 
-namespace RockScissorsPaper.Services
+namespace RockScissorsPaper
 {
     public class AccountDBContext : DbContext
     {
