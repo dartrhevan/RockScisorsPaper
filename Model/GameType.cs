@@ -3,7 +3,6 @@
     public enum GameType : byte
     {
         RandomCompetitor,
-        ParticularCompetitor,
         Bot
     }
 }

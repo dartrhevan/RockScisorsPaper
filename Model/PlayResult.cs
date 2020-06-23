@@ -14,5 +14,13 @@ namespace RockScissorsPaper.Model
             Winner = winner;
             Result = result;
         }
+
+        public void EndGame()
+        {
+            Looser.Value = GameValue.None;
+            Winner.Value = GameValue.None;
+        }
+
+
     }
 }

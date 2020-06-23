@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RockScissorsPaper.Model
 {
-    public class User : IPlayer
+    public class User //: IPlayer
     {
         public User() { }
 

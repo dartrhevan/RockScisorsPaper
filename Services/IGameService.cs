@@ -4,11 +4,11 @@ namespace RockScissorsPaper.Services
 {
     public interface IGameService
     {
-        void JoinGame(User user, GameType type, string competitor = null);
+        void JoinGame(User user, GameType type);
 
         void LeaveGame(User user);
 
-        PlayResult Play(User user, GameValue value);
+        PlayResult Play(User user);
 
     }
 }

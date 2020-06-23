@@ -22,11 +22,11 @@ namespace RockScissorsPaper.Controllers
             _authService = authService;
         }
 
-        public async Task JoinGame(string type, string competitor = null)
+        public async Task JoinGame(string type)
         {
             GameType value;
             GameType.TryParse(type, out value);
-            _gameService.JoinGame(await _authService.GetUser(Context.User.Identity.Name), value, competitor);
+            _gameService.JoinGame(await _authService.GetUser(Context.User.Identity.Name), value);
         }
         /*
         public async Task Greetings()
