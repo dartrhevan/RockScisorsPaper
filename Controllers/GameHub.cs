@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
@@ -14,6 +15,7 @@ namespace RockScissorsPaper.Controllers
         private ILogger<GameHub> _logger;
         private readonly IGameService _gameService;
         private readonly IAuthService _authService;
+        private readonly Dictionary<User, string> usersConnections = new Dictionary<User, string>();
 
         public GameHub(ILogger<GameHub> logger, IGameService gameService, IAuthService authService)
         {
@@ -26,21 +28,35 @@ namespace RockScissorsPaper.Controllers
         {
             GameType value;
             GameType.TryParse(type, out value);
-            _gameService.JoinGame(await _authService.GetUser(Context.User.Identity.Name), value);
+            var user = await CurrentUser;
+            var competitor = _gameService.JoinGame(user, value);
+            usersConnections[user] = Context.ConnectionId;
+            if (competitor != null)
+                await Task.WhenAll(Clients.User(usersConnections[user]).SendAsync("startGame", competitor.Login),
+                    Clients.User(usersConnections[competitor]).SendAsync("startGame", user.Login));
         }
-        /*
-        public async Task Greetings()
-        {
-            await Clients.Caller.SendAsync("Greetings", Context.User.Identity.Name);
-        }*/
 
-        public void LeaveGame()
+        private Task<User> CurrentUser => _authService.GetUser(Context.User.Identity.Name);
+
+        public async Task LeaveGame()
         {
-            //TODO: implement
+            var user = await CurrentUser;
+            _gameService.LeaveGame(user);
+            usersConnections.Remove(user);
         }
-        public void Play(string value)
+
+        public async void Play(string val)
         {
-            //TODO: implement
+            GameValue value;
+            GameValue.TryParse(val, out value);
+            var result = _gameService.Play(await CurrentUser, value);
+            if (result.Result != GameResult.NotCompleted)
+                result.EndGame();
+            await Task.WhenAll(
+                Clients.User(usersConnections[result.Looser])
+                    .SendAsync("playResult", "You are looser!", result.Winner.Value.ToString()),
+                Clients.User(usersConnections[result.Winner])
+                    .SendAsync("playResult", "You are winner!", result.Looser.Value.ToString()));
         }
     }
 }

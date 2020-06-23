@@ -9,23 +9,15 @@ namespace RockScissorsPaper.Services
     {
 
         public readonly List<User> WaitingUsers = new List<User>();
-        public readonly Dictionary<string, User> ParticularGameUsers = new Dictionary<string, User>();
         public readonly HashSet<Game> Games = new HashSet<Game>();
 
-        public void JoinGame(User user, GameType type)
-        {
-            switch (type)
+        public User JoinGame(User user, GameType type) =>
+            type switch
             {
-                case GameType.RandomCompetitor:
-                    JoinRandomGame(user);
-                    break;
-                case GameType.Bot:
-                    JoinToBot(user);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-        }
+                GameType.RandomCompetitor => JoinRandomGame(user),
+                GameType.Bot => JoinToBot(user),
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
 
         public GameServiceImpl(int seed)
         {
@@ -38,8 +30,13 @@ namespace RockScissorsPaper.Services
         }
 
 
-        private void JoinToBot(User user) => Games.Add(new Game(user, GetBot()));
-        
+        private User JoinToBot(User user)
+        {
+            var bot = GetBot();
+            Games.Add(new Game(user, bot));
+            return bot;
+        }
+
 
         private readonly Random random;
         private User GetBot()
@@ -49,29 +46,32 @@ namespace RockScissorsPaper.Services
         }
         
 
-        private void JoinRandomGame(User user)
+        private User JoinRandomGame(User user)
         {
             var competitor = WaitingUsers.LastOrDefault();
             if (competitor != null)
             {
                 Games.Add(new Game(user, competitor));
                 WaitingUsers.Remove(competitor);
+                return competitor;
             }
             else
                 WaitingUsers.Add(user);
+
+            return null;
         }
 
 
         public void LeaveGame(User user)
         {
             WaitingUsers.Remove(user);
-            ParticularGameUsers.Remove(user.Login);
             Games.RemoveWhere(g => g.Participates(user));
 
         }
 
-        public PlayResult Play(User user)
+        public PlayResult Play(User user, GameValue value)
         {
+            user.Value = value;
             var game = Games.FirstOrDefault(g => g.Participates(user));
             return game?.Play();
         }
