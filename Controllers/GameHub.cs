@@ -15,7 +15,7 @@ namespace RockScissorsPaper.Controllers
         private ILogger<GameHub> _logger;
         private readonly IGameService _gameService;
         private readonly IAuthService _authService;
-        private readonly Dictionary<User, string> usersConnections = new Dictionary<User, string>();
+        private static readonly Dictionary<User, string> usersConnections = new Dictionary<User, string>();
 
         public GameHub(ILogger<GameHub> logger, IGameService gameService, IAuthService authService)
         {
@@ -27,13 +27,15 @@ namespace RockScissorsPaper.Controllers
         public async Task JoinGame(string type)
         {
             GameType value;
-            GameType.TryParse(type, out value);
+            GameType.TryParse(type, out value);//TODO: handle error!
             var user = await CurrentUser;
             var competitor = _gameService.JoinGame(user, value);
+            //TODO: check if exists
             usersConnections[user] = Context.ConnectionId;
             if (competitor != null)
-                await Task.WhenAll(Clients.User(usersConnections[user]).SendAsync("startGame", competitor.Login),
-                    Clients.User(usersConnections[competitor]).SendAsync("startGame", user.Login));
+                //Clients.C
+                await Task.WhenAll(Clients.Client(usersConnections[user]).SendAsync("startGame", competitor.Login),
+                 Clients.Client(usersConnections[competitor]).SendAsync("startGame", user.Login));
         }
 
         private Task<User> CurrentUser => _authService.GetUser(Context.User.Identity.Name);
@@ -43,6 +45,7 @@ namespace RockScissorsPaper.Controllers
             var user = await CurrentUser;
             _gameService.LeaveGame(user);
             usersConnections.Remove(user);
+            //TODO: send
         }
 
         public async void Play(string val)
@@ -53,9 +56,9 @@ namespace RockScissorsPaper.Controllers
             if (result.Result != GameResult.NotCompleted)
                 result.EndGame();
             await Task.WhenAll(
-                Clients.User(usersConnections[result.Looser])
+                Clients.Client(usersConnections[result.Looser])
                     .SendAsync("playResult", "You are looser!", result.Winner.Value.ToString()),
-                Clients.User(usersConnections[result.Winner])
+                Clients.Client(usersConnections[result.Winner])
                     .SendAsync("playResult", "You are winner!", result.Looser.Value.ToString()));
         }
     }

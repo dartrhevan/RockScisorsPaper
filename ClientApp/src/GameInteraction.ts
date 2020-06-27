@@ -6,23 +6,45 @@ const options: signalR.IHttpConnectionOptions =
         sessionStorage.getItem('token') as string
 };
 
-const hubConnection = new signalR.HubConnectionBuilder()
-    .withUrl("/GameHub", options)
-    .build();
 
-//let userName = '';
-// получение сообщения от сервера
-hubConnection.on('start', function (competitor : string) {
+export enum GameValue {
+    Rock = 'Rock',
+    Scissors = 'Scissors',
+    Paper = 'Paper'
+}
 
-});
+export class GameHubClient {
 
-hubConnection.on("Greetings", mes => {
-    alert(mes);
-});
+    private hubConnection: signalR.HubConnection;
 
-export async function send() {
-    if(hubConnection.state !== signalR.HubConnectionState.Connected)
-        await hubConnection.start();
-    hubConnection.invoke("JoinGame", "RandomCompetitor", "");
-};
+    constructor(onStartGame : Function) {
 
+        this.hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl("/GameHub", options)
+            .build();
+
+        // получение сообщения от сервера
+        this.hubConnection.on('startGame', competitor => {
+            alert('Your competitor is:' + competitor);
+            onStartGame(competitor);
+        });
+
+        this.hubConnection.onclose(this.onClose);
+    }
+
+    private onClose() {
+        this.hubConnection.invoke('LeaveGame'); //TODO: Check
+        alert('close');
+    }
+
+    async play(value: GameValue) {
+
+    }
+
+    async joinGame(gameType: string = "RandomCompetitor") {
+        if (this.hubConnection.state !== signalR.HubConnectionState.Connected)
+            await this.hubConnection.start();
+        this.hubConnection.invoke("JoinGame", gameType);
+        alert('Wait for a competitor...');
+    };
+}
