@@ -45,10 +45,9 @@ namespace RockScissorsPaper.Services
         private readonly Random random;
         private User GetBot()
         {
-            var bot = new User("Bot", "") {Value = (GameValue) random.Next(1, 3)};
+            var bot = new User("Bot", "") { Value = (GameValue)random.Next(1, 3), Id = -1 };
             return bot;
         }
-        
 
         private User JoinRandomGame(User user)
         {
@@ -75,7 +74,6 @@ namespace RockScissorsPaper.Services
 
         public PlayResult Play(User user, GameValue value)
         {
-            //user.Value = value;
             var game = Games.FirstOrDefault(g => g.Participates(user));
             if(user.Equals(game.User1))
                 game.User1.Value = value;

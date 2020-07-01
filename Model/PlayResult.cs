@@ -1,4 +1,5 @@
 ﻿using System;
+using RockScissorsPaper.Services;
 
 namespace RockScissorsPaper.Model
 {
@@ -17,10 +18,14 @@ namespace RockScissorsPaper.Model
 
         public void EndGame()
         {
-            Looser.Value = GameValue.None;
-            Winner.Value = GameValue.None;
+            CleanResult(Looser);
+            CleanResult(Winner);
         }
 
-
+        private void CleanResult(User user)
+        {
+            var random = new Random();
+            user.Value = user.Login == "Bot" && user.Id == -1 ? (GameValue) random.Next(1, 3) : GameValue.None;
+        }
     }
 }
