@@ -44,6 +44,8 @@ namespace RockScissorsPaper.Model
             return Equals(User1, other.User1) && Equals(User2, other.User2);
         }
 
+        public override string ToString() => $"{User1} <-> {User2}";
+
         public bool Participates(User user) => User1.Equals(user) || User2.Equals(user);
 
         public override bool Equals(object obj)

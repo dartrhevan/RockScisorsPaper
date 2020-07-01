@@ -42,12 +42,12 @@ namespace RockScissorsPaper.Tests
             var comp2 = gameService.JoinGame(c, GameType.RandomCompetitor);
             Assert.AreEqual(null, comp1);
             Assert.AreEqual(a, comp2);
-            //a.Value = aValue;
+
             var intermediateResult = gameService.Play(a, aValue);
             Assert.AreEqual(GameResult.NotCompleted, intermediateResult.Result);
             Assert.AreEqual(null, intermediateResult.Winner);
             Assert.AreEqual(null, intermediateResult.Looser);
-            //c.Value = cValue;
+
             var result = gameService.Play(c, cValue);
             Assert.AreEqual(GameResult.HasWinner, result.Result);
             Assert.AreEqual(aWin ? a : c, result.Winner);
@@ -62,12 +62,12 @@ namespace RockScissorsPaper.Tests
             var c = new User("c", "b") {Id = 2};
             gameService.JoinGame(a, GameType.RandomCompetitor);
             gameService.JoinGame(c, GameType.RandomCompetitor);
-            //a.Value = GameValue.Paper;
+
             var intermediateResult = gameService.Play(a, GameValue.Paper);
             Assert.AreEqual(GameResult.NotCompleted, intermediateResult.Result);
             Assert.AreEqual(null, intermediateResult.Winner);
             Assert.AreEqual(null, intermediateResult.Looser);
-            //c.Value = GameValue.Paper;
+
             var result = gameService.Play(c, GameValue.Paper);
             Assert.AreEqual(GameResult.Draw, result.Result);
             Assert.AreEqual( a, result.Winner);
@@ -81,7 +81,7 @@ namespace RockScissorsPaper.Tests
             var gameService = new GameServiceImpl(seed);
             var a = new User("a", "b") {Id = 1};
             gameService.JoinGame(a, GameType.Bot);
-            //a.Value = GameValue.Paper;
+
             var result = gameService.Play(a, GameValue.Paper);
             Assert.AreEqual(GameValue.Rock, result.Looser.Value);
             Assert.AreEqual(GameResult.HasWinner, result.Result);
@@ -123,11 +123,11 @@ namespace RockScissorsPaper.Tests
             var f = new User("f", "b") { Id = 5 };
             gameService.JoinGame(e, GameType.RandomCompetitor);
             gameService.JoinGame(f, GameType.RandomCompetitor);
-            //a.Value = GameValue.Paper;
+
             var intermediateResult = gameService.Play(a, GameValue.Paper);
             var d = new User("d", "b") { Id = 3 };
             gameService.JoinGame(d, GameType.Bot);
-            //d.Value = GameValue.Paper;
+
             var resultBot = gameService.Play(a, GameValue.Paper);
             Assert.AreEqual(GameValue.Rock, resultBot.Looser.Value);
             Assert.AreEqual(GameResult.HasWinner, resultBot.Result);
@@ -135,13 +135,30 @@ namespace RockScissorsPaper.Tests
             Assert.AreEqual(GameResult.NotCompleted, intermediateResult.Result);
             Assert.AreEqual(null, intermediateResult.Winner);
             Assert.AreEqual(null, intermediateResult.Looser);
-            //c.Value = GameValue.Paper;
+
             var result = gameService.Play(c, GameValue.Paper);
             Assert.AreEqual(GameResult.Draw, result.Result);
             Assert.AreEqual(a, result.Winner);
             Assert.AreEqual(c, result.Looser);
         }
-        
+
+        [Test]
+        public void DoubleJoiningTest()
+        {
+            var gameService = new GameServiceImpl(seed);
+            var a = new User("a", "b") { Id = 1 };
+            var c = new User("c", "b") { Id = 2 };
+            var comp1 = gameService.JoinGame(a, GameType.RandomCompetitor);
+            var comp2 = gameService.JoinGame(c, GameType.RandomCompetitor);
+
+            Assert.AreEqual(1, gameService.Games.Count, "Games count");
+            gameService.JoinGame(a, GameType.RandomCompetitor);
+            gameService.JoinGame(c, GameType.RandomCompetitor);
+
+            Assert.AreEqual(0, gameService.WaitingUsers.Count, "Users count");
+            Assert.AreEqual(1, gameService.Games.Count, "Games count");
+        }
+
         private const int seed = 510;
     }
 }

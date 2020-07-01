@@ -7,12 +7,24 @@ code {
   color: #E01A76;
 }
 
+img {
+    margin: 25px;
+    cursor: pointer;
+}
+
 .btn-primary {
   color: #fff;
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
 
+.playButtons {
+    display: flex;
+    height: 90vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 
 .competitor-choose {
     display: none;

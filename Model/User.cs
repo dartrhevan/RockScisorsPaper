@@ -7,25 +7,25 @@ namespace RockScissorsPaper.Model
     public class User //: IPlayer
     {
         public User() { }
+        public override string ToString() => $"{Login}: {Value}";
 
-        private sealed class IdEqualityComparer : IEqualityComparer<User>
+        protected bool Equals(User other)
         {
-            public bool Equals(User x, User y)
-            {
-                if (ReferenceEquals(x, y)) return true;
-                if (ReferenceEquals(x, null)) return false;
-                if (ReferenceEquals(y, null)) return false;
-                if (x.GetType() != y.GetType()) return false;
-                return x.Id == y.Id;
-            }
-
-            public int GetHashCode(User obj)
-            {
-                return obj.Id;
-            }
+            return Id == other.Id;
         }
 
-        public static IEqualityComparer<User> IdComparer { get; } = new IdEqualityComparer();
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((User) obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Id;
+        }
 
         public User(string login, string password)
         {

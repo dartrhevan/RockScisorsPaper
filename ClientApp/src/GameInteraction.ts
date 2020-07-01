@@ -29,6 +29,11 @@ export class GameHubClient {
             onStartGame(competitor);
         });
 
+        this.hubConnection.on("playResult",
+            msg => {
+                alert(msg);
+            });
+
         this.hubConnection.onclose(this.onClose);
     }
 
@@ -38,7 +43,7 @@ export class GameHubClient {
     }
 
     async play(value: GameValue) {
-
+        this.hubConnection.invoke("Play", value.toString());
     }
 
     async joinGame(gameType: string = "RandomCompetitor") {

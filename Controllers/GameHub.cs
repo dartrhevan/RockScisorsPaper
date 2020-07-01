@@ -33,9 +33,12 @@ namespace RockScissorsPaper.Controllers
             //TODO: check if exists
             usersConnections[user] = Context.ConnectionId;
             if (competitor != null)
-                //Clients.C
-                await Task.WhenAll(Clients.Client(usersConnections[user]).SendAsync("startGame", competitor.Login),
-                 Clients.Client(usersConnections[competitor]).SendAsync("startGame", user.Login));
+            {
+                if(usersConnections.ContainsKey(user))
+                    await Clients.Client(usersConnections[user]).SendAsync("startGame", competitor.Login);
+                if (usersConnections.ContainsKey(competitor))
+                    await Clients.Client(usersConnections[competitor]).SendAsync("startGame", user.Login);
+            }
         }
 
         private Task<User> CurrentUser => _authService.GetUser(Context.User.Identity.Name);
@@ -48,18 +51,21 @@ namespace RockScissorsPaper.Controllers
             //TODO: send
         }
 
-        public async void Play(string val)
+        public async Task Play(string val)
         {
             GameValue value;
             GameValue.TryParse(val, out value);
             var result = _gameService.Play(await CurrentUser, value);
             if (result.Result != GameResult.NotCompleted)
+            {
                 result.EndGame();
-            await Task.WhenAll(
-                Clients.Client(usersConnections[result.Looser])
-                    .SendAsync("playResult", "You are looser!", result.Winner.Value.ToString()),
-                Clients.Client(usersConnections[result.Winner])
-                    .SendAsync("playResult", "You are winner!", result.Looser.Value.ToString()));
+                if (usersConnections.ContainsKey(result.Looser))
+                    await Clients.Client(usersConnections[result.Looser])
+                    .SendAsync("playResult", "You are looser!", result.Winner.Value.ToString());
+                if (usersConnections.ContainsKey(result.Winner))
+                    await Clients.Client(usersConnections[result.Winner])
+                        .SendAsync("playResult", "You are winner!", result.Looser.Value.ToString());
+            }
         }
     }
 }

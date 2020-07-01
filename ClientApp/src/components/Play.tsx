@@ -14,27 +14,41 @@ interface IProps {
      match: IParams
 }
 
-export default class Play extends React.Component {
+interface IPlayState {
+    isPlaying: boolean;
+    competitor: string;
+}
+
+export default class Play extends React.Component<IProps, IPlayState> {
     constructor(props: IProps) {
         super(props);
         console.log(GameValue.Paper.toString());
-        this.type = props.match.params.type;
-        this.state = { isPlaying: false };
+        const type = props.match.params.type;
+        this.state = { isPlaying: false, competitor: "" };
+
+        this.client = new GameHubClient((competitor: string) => { this.setState({ isPlaying: true, competitor }); });
+
+        this.client.joinGame(type);
+
     }
 
-    private type : string;
+    private client : GameHubClient;
+
 
     render(): Object | string | number | {}  {
-        
-        const client = new GameHubClient((competitor: string) => { });
-        
-        client.joinGame(this.type);
-
         return (
             <div>
-                <button>Rock</button>
-                <button>Scissors</button>
-                <button>Paper</button>
+                {this.state.isPlaying ?
+                    (<div className="playButtons">
+                        <h2>Your competitor is: {this.state.competitor}</h2>
+                        <br/>
+                        <div>
+                            <img width="100" draggable={false} onClick={e => this.client.play(GameValue.Rock)} height="100" src="/img/rock.png" />
+                            <img width="100" draggable={false} onClick={e => this.client.play(GameValue.Paper)} height="100" src="/img/paper.png" />
+                            <img width="100" draggable={false} onClick={e => this.client.play(GameValue.Scissors)} height="100" src="/img/scissors.png"/>
+                        </div>
+                    </div>) 
+                        : "Waiting..."}
             </div>);
     }
 }

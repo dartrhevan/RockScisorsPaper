@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using RockScissorsPaper.Model;
 
@@ -11,14 +12,17 @@ namespace RockScissorsPaper.Services
         public readonly List<User> WaitingUsers = new List<User>();
         public readonly HashSet<Game> Games = new HashSet<Game>();
 
-        public User JoinGame(User user, GameType type) =>
-            type switch
-            {
-                GameType.RandomCompetitor => JoinRandomGame(user),
-                GameType.Bot => JoinToBot(user),
-                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
-            };
-
+        public User JoinGame(User user, GameType type)
+        {
+            if (WaitingUsers.Contains(user) || Games.Any(g => g.Participates(user)))
+                return null;//TODO: check
+            return type switch
+                {
+                    GameType.RandomCompetitor => JoinRandomGame(user),
+                    GameType.Bot => JoinToBot(user),
+                    _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+                };
+        }
         public GameServiceImpl(int seed)
         {
             random = new Random(seed);
@@ -71,9 +75,13 @@ namespace RockScissorsPaper.Services
 
         public PlayResult Play(User user, GameValue value)
         {
-            user.Value = value;
+            //user.Value = value;
             var game = Games.FirstOrDefault(g => g.Participates(user));
-            return game?.Play();
+            if(user.Equals(game.User1))
+                game.User1.Value = value;
+            else
+                game.User2.Value = value;
+            return game.Play();
         }
     }
 }
