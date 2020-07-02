@@ -20,9 +20,6 @@ namespace RockScissorsPaper.Controllers
         [HttpGet]
         public string Test() => "Hello!";
 
-        [Authorize]
-        [HttpGet]
-        public string Check() => HttpContext.User.Identity.Name;
 
         [AllowAnonymous]
         [HttpPost]

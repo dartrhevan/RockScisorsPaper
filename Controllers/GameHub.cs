@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +17,7 @@ namespace RockScissorsPaper.Controllers
         private ILogger<GameHub> _logger;
         private readonly IGameService _gameService;
         private readonly IAuthService _authService;
-        private static readonly Dictionary<User, string> usersConnections = new Dictionary<User, string>();
+        private static readonly ConcurrentDictionary<User, string> usersConnections = new ConcurrentDictionary<User, string>();
 
         public GameHub(ILogger<GameHub> logger, IGameService gameService, IAuthService authService)
         {
@@ -32,6 +34,7 @@ namespace RockScissorsPaper.Controllers
             var competitor = _gameService.JoinGame(user, value);
             //TODO: check if exists
             usersConnections[user] = Context.ConnectionId;
+
             if (competitor != null)
             {
                 if(usersConnections.ContainsKey(user))
@@ -43,20 +46,29 @@ namespace RockScissorsPaper.Controllers
 
         private Task<User> CurrentUser => _authService.GetUser(Context.User.Identity.Name);
 
-        public async Task LeaveGame()
+        async Task LeaveGame()
         {
             var user = await CurrentUser;
-            _gameService.LeaveGame(user);
-            usersConnections.Remove(user);
-            //TODO: send
+            string val;
+            var competitor = _gameService.LeaveGame(user);
+            _logger.Log(LogLevel.Debug, "On disconnect: " + competitor?.Login??"" );
+            if (competitor != null && usersConnections.ContainsKey(competitor))
+                await Clients.Client(usersConnections[competitor]).SendAsync("leaveGame");
+            usersConnections.Remove(user, out val);
         }
+        
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            await LeaveGame();
+        }
+        
 
         public async Task Play(string val)
         {
             GameValue value;
             GameValue.TryParse(val, out value);
             var result = _gameService.Play(await CurrentUser, value);
-            if (result.Result != GameResult.NotCompleted)
+            if (result.Result == GameResult.HasWinner)
             {
                 result.EndGame();
                 if (usersConnections.ContainsKey(result.Looser))
@@ -65,6 +77,16 @@ namespace RockScissorsPaper.Controllers
                 if (usersConnections.ContainsKey(result.Winner))
                     await Clients.Client(usersConnections[result.Winner])
                         .SendAsync("playResult", "You are winner!", result.Looser.Value.ToString());
+            } 
+            else if (result.Result == GameResult.Draw)
+            {
+                result.EndGame();
+                if (usersConnections.ContainsKey(result.Looser))
+                    await Clients.Client(usersConnections[result.Looser])
+                        .SendAsync("playResult", "There is no winner!", result.Winner.Value.ToString());
+                if (usersConnections.ContainsKey(result.Winner))
+                    await Clients.Client(usersConnections[result.Winner])
+                        .SendAsync("playResult", "There is no winner!", result.Looser.Value.ToString());
             }
         }
     }

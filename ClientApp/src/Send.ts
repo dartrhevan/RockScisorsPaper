@@ -12,7 +12,6 @@
                 alert(r.message);
                 return;
             }
-            alert('Hello ' + r.username);
             sessionStorage.setItem('token', r.access_token);
             sessionStorage.setItem('username', r.username);
             window.location.href = '/';

@@ -19,37 +19,36 @@ export class GameHubClient {
 
     constructor(onStartGame : Function) {
 
-        this.hubConnection = new signalR.HubConnectionBuilder()
+        const hub = new signalR.HubConnectionBuilder()
             .withUrl("/GameHub", options)
             .build();
-
+        this.hubConnection = hub;
         // получение сообщения от сервера
-        this.hubConnection.on('startGame', competitor => {
-            alert('Your competitor is:' + competitor);
-            onStartGame(competitor);
-        });
-
-        this.hubConnection.on("playResult",
+        this.hubConnection.on('startGame', competitor => onStartGame(competitor));
+        
+        this.hubConnection.on("leaveGame",
             msg => {
-                alert(msg);
+                alert('Your competitor left game');
+                this.hubConnection.stop();
+                window.location.href = '/game';
             });
 
-        this.hubConnection.onclose(this.onClose);
-    }
+        this.hubConnection.on("playResult",
+            msg => alert(msg));
 
-    private onClose() {
-        this.hubConnection.invoke('LeaveGame'); //TODO: Check
-        alert('close');
     }
-
     async play(value: GameValue) {
         this.hubConnection.invoke("Play", value.toString());
+    }
+
+    async leaveGame() {
+        //this.hubConnection.invoke("LeaveGame");
+        await this.hubConnection.stop();
     }
 
     async joinGame(gameType: string = "RandomCompetitor") {
         if (this.hubConnection.state !== signalR.HubConnectionState.Connected)
             await this.hubConnection.start();
         this.hubConnection.invoke("JoinGame", gameType);
-        alert('Wait for a competitor...');
     };
 }

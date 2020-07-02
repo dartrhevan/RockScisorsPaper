@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NUnit.Framework;
 
 namespace RockScissorsPaper.Model
 {
@@ -10,6 +11,14 @@ namespace RockScissorsPaper.Model
         public readonly User User1;
         public readonly User User2;
 
+        public User GetCompetitor(User user)
+        {
+            if (user.Id == User1.Id)
+                return User2;
+            if (user.Id == User2.Id)
+                return User1;
+            throw new Exception("The user does not participate the game!");
+        }
         public PlayResult Play()
         {
             if (User1 == null || User2 == null || User1.Value == GameValue.None || User2.Value == GameValue.None)

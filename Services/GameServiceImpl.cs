@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using ConcurrentCollections;
 using RockScissorsPaper.Model;
 
 namespace RockScissorsPaper.Services
@@ -9,9 +10,14 @@ namespace RockScissorsPaper.Services
     public class GameServiceImpl : IGameService
     {
 
-        public readonly List<User> WaitingUsers = new List<User>();
-        public readonly HashSet<Game> Games = new HashSet<Game>();
-
+        public readonly HashSet<User> WaitingUsers = new HashSet<User>();
+        public readonly ConcurrentHashSet<Game> Games = new ConcurrentHashSet<Game>();
+        /// <summary>
+        /// To join the game. Retrieve a competitor. If such wasn't found retrieve null and save user to allow to notify about game start later.
+        /// </summary>
+        /// <param name="user">User to join</param>
+        /// <param name="type">Type of the game</param>
+        /// <returns></returns>
         public User JoinGame(User user, GameType type)
         {
             if (WaitingUsers.Contains(user) || Games.Any(g => g.Participates(user)))
@@ -64,14 +70,28 @@ namespace RockScissorsPaper.Services
             return null;
         }
 
-
-        public void LeaveGame(User user)
+        /// <summary>
+        /// Should be executed when a user leaves the game, retrieve a competitor, if exists
+        /// </summary>
+        /// <param name="user"></param>
+        public User LeaveGame(User user)
         {
             WaitingUsers.Remove(user);
-            Games.RemoveWhere(g => g.Participates(user));
-
+            
+            var game = Games.FirstOrDefault(g => g.Participates(user));
+            if (game != null)
+            {
+                Games.TryRemove(game);
+                return game.GetCompetitor(user);
+            }
+            return null;
         }
-
+        /// <summary>
+        /// If GameResult is not NotCompleted method EndGame of a PlayResult object should be executed.
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public PlayResult Play(User user, GameValue value)
         {
             var game = Games.FirstOrDefault(g => g.Participates(user));

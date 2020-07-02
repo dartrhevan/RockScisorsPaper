@@ -6,7 +6,7 @@ namespace RockScissorsPaper.Services
     {
         User JoinGame(User user, GameType type);
 
-        void LeaveGame(User user);
+        User LeaveGame(User user);
 
         PlayResult Play(User user, GameValue value);
 

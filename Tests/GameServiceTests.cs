@@ -20,12 +20,12 @@ namespace RockScissorsPaper.Tests
         [TestCase(5, 1, 2)]
         [TestCase(1, 1, 0)]
         [TestCase(3, 1, 1)]
-        [TestCase(2,0, 1)]
+        [TestCase(2, 0, 1)]
         public void MultipleJoinRandomGameTest(int count, int result, int gameCount)
         {
             var gameService = new GameServiceImpl(seed);
             for (var i = 0; i < count; i++)
-                gameService.JoinGame(new User(i.ToString(), "b"), GameType.RandomCompetitor);
+                gameService.JoinGame(new User(i.ToString(), "b") {Id = i}, GameType.RandomCompetitor);
             Assert.AreEqual(result, gameService.WaitingUsers.Count, "Users count");
             Assert.AreEqual(gameCount, gameService.Games.Count, "Games count");
         }
@@ -110,7 +110,7 @@ namespace RockScissorsPaper.Tests
                 result.EndGame();
             }
         }
-
+        /*
         [Test]
         public void ThreeDifferentGamesTest()
         {
@@ -140,6 +140,22 @@ namespace RockScissorsPaper.Tests
             Assert.AreEqual(GameResult.Draw, result.Result);
             Assert.AreEqual(a, result.Winner);
             Assert.AreEqual(c, result.Looser);
+        }
+        */
+        [Test]
+        public void LeaveGameTest()
+        {
+
+            var gameService = new GameServiceImpl(seed);
+            var a = new User("a", "b") { Id = 1 };
+            var c = new User("c", "b") { Id = 2 };
+            var comp1 = gameService.JoinGame(a, GameType.RandomCompetitor);
+            var comp2 = gameService.JoinGame(c, GameType.RandomCompetitor);
+
+            var comp = gameService.LeaveGame(a);
+            Assert.AreEqual(c, comp);
+            Assert.AreEqual(0, gameService.WaitingUsers.Count);
+            Assert.AreEqual(0, gameService.Games.Count);
         }
 
         [Test]

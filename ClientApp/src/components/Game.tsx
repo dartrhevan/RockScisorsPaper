@@ -4,6 +4,12 @@ import $ from "jquery";
 
 export default class Game extends React.Component {
 
+    constructor(props : Object) {
+        super(props);
+        if (!sessionStorage.getItem('token'))
+            window.location.href = '/login';
+    }
+
     render(): Object | string | number | {} | boolean {
         return (
             <div className="centerd">

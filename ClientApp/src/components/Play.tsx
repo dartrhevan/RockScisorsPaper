@@ -19,6 +19,7 @@ interface IPlayState {
     competitor: string;
 }
 
+
 export default class Play extends React.Component<IProps, IPlayState> {
     constructor(props: IProps) {
         super(props);
@@ -26,14 +27,17 @@ export default class Play extends React.Component<IProps, IPlayState> {
         const type = props.match.params.type;
         this.state = { isPlaying: false, competitor: "" };
 
-        this.client = new GameHubClient((competitor: string) => { this.setState({ isPlaying: true, competitor }); });
+        this.client = new GameHubClient((competitor: string) => this.setState({ isPlaying: true, competitor }));
 
         this.client.joinGame(type);
 
     }
 
-    private client : GameHubClient;
+    componentWillUnmount(): void {
+        this.client.leaveGame();
+    }
 
+    private client: GameHubClient;
 
     render(): Object | string | number | {}  {
         return (
@@ -48,7 +52,7 @@ export default class Play extends React.Component<IProps, IPlayState> {
                             <img width="100" draggable={false} onClick={e => this.client.play(GameValue.Scissors)} height="100" src="/img/scissors.png"/>
                         </div>
                     </div>) 
-                        : "Waiting..."}
+                    : <h2>Waiting for competitor</h2>}
             </div>);
     }
 }
